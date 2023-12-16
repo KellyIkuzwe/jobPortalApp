@@ -1,22 +1,26 @@
-FROM maven:3.8.5-openjdk-8 AS build
+# Use a base image with Java and Maven pre-installed
+FROM maven:3.8-openjdk-16 AS build
 
+# Set the working directory in the container
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
 
-COPY src ./src
+# Copy the Maven project file
+COPY pom.xml .
+
+# Download dependencies and build the application
 RUN mvn clean package -DskipTests
 
-# Stage 2: Create the final lightweight image
-FROM openjdk:8-jre-slim
+# Use a lightweight base image with Java
+FROM openjdk:16-jdk-alpine
 
+# Set the working directory in the container
 WORKDIR /app
 
-COPY --from=build /app/target/JobPortal-0.0.1-SNAPSHOT.jar /app/JobPortal.jar
+# Copy the JAR file from the build stage
+COPY --from=build /app/target/JobPortal-0.0.1-SNAPSHOT.jar .
 
-EXPOSE 5050
+# Expose the port that the application will run on
+EXPOSE 8080
 
-CMD ["java", "-Xmx512m", "-jar", "JobPortal.jar"]
-
-# Optional: Health check
-HEALTHCHECK CMD curl --fail http://https:/JobPortal-web-8aku.onrender.com/actuator/health || exit 1
+# Specify the command to run on container start
+CMD ["java", "-jar", "JobPortal-0.0.1-SNAPSHOT.jar"]
