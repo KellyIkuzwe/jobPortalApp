@@ -1,5 +1,5 @@
 # Use a base image with Java and Maven pre-installed
-FROM maven:3.8-openjdk-16 AS build
+FROM maven:3.8-openjdk-17 AS build
 
 # Set the working directory in the container
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY pom.xml .
 RUN mvn clean package -DskipTests
 
 # Use a lightweight base image with Java
-FROM openjdk:16-jdk-alpine
+FROM adoptopenjdk:17-jdk-hotspot
 
 # Set the working directory in the container
 WORKDIR /app
