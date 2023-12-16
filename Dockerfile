@@ -7,8 +7,14 @@ WORKDIR /app
 # Copy the Maven project file
 COPY pom.xml .
 
-# Download dependencies and build the application
-RUN mvn clean package -DskipTests
+# Download dependencies
+RUN mvn dependency:go-offline
+
+# Copy the source code
+COPY src/ src/
+
+# Build the application
+RUN mvn package -DskipTests
 
 # Use a lightweight base image with Java
 FROM openjdk:17-jdk-slim
