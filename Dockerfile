@@ -11,7 +11,7 @@ COPY pom.xml .
 RUN mvn clean package -DskipTests
 
 # Use a lightweight base image with Java
-FROM adoptopenjdk:17-jdk-hotspot
+FROM openjdk:17-jdk-slim
 
 # Set the working directory in the container
 WORKDIR /app
