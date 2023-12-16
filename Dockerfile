@@ -1,10 +1,8 @@
-# Use a base image with Java and Maven pre-installed
+# Stage 1: Build the application
 FROM maven:3.8-openjdk-17 AS build
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the Maven project file
+# Copy only the POM file to cache dependencies
 COPY pom.xml .
 
 # Download dependencies
@@ -16,13 +14,11 @@ COPY src/ src/
 # Build the application
 RUN mvn package -DskipTests
 
-# Use a lightweight base image with Java
+# Stage 2: Create the final image
 FROM openjdk:17-jdk-slim
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the JAR file from the build stage
+# Copy only the necessary artifacts from the build stage
 COPY --from=build /app/target/JobPortal-0.0.1-SNAPSHOT.jar .
 
 # Expose the port that the application will run on
